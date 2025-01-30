@@ -12,3 +12,5 @@ spec:
       port: 80         # External port exposed by the service
       targetPort: 3001  # The container's port (defined in your Rollout)
 
+
+

@@ -1,0 +1,63 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: semaphore-rollout
+spec:
+  replicas: {{ .Values.semaphore.replicas }}
+  strategy:
+    canary:
+      steps:
+        - setWeight: 25
+        - pause: {duration: 30s}
+        - setWeight: 50
+        - pause: {duration: 60s}
+        - setWeight: 100
+  selector:
+    matchLabels:
+      app: semaphore
+  template:
+    metadata:
+      labels:
+        app: semaphore
+    spec:
+      containers:
+        - name: semaphore
+          image: "{{ .Values.semaphore.image }}:{{ .Values.semaphore.tag }}"
+          ports:
+            - containerPort: 3000
+          env:
+            - name: SEMAPHORE_DB_USER
+              value: "{{ .Values.semaphore.env.SEMAPHORE_DB_USER }}"
+            - name: SEMAPHORE_DB_PASS
+              value: "{{ .Values.semaphore.env.SEMAPHORE_DB_PASS }}"
+            - name: SEMAPHORE_DB_HOST
+              value: "{{ .Values.semaphore.env.SEMAPHORE_DB_HOST }}"
+            - name: SEMAPHORE_DB_PORT
+              value: "{{ .Values.semaphore.env.SEMAPHORE_DB_PORT }}"
+            - name: SEMAPHORE_DB_DIALECT
+              value: "{{ .Values.semaphore.env.SEMAPHORE_DB_DIALECT }}"
+            - name: SEMAPHORE_DB
+              value: "{{ .Values.semaphore.env.SEMAPHORE_DB }}"
+            - name: SEMAPHORE_ADMIN_PASSWORD
+              value: "{{ .Values.semaphore.env.SEMAPHORE_ADMIN_PASSWORD }}"
+            - name: SEMAPHORE_ADMIN_NAME
+              value: "{{ .Values.semaphore.env.SEMAPHORE_ADMIN_NAME }}"
+            - name: SEMAPHORE_ADMIN_EMAIL
+              value: "{{ .Values.semaphore.env.SEMAPHORE_ADMIN_EMAIL }}"
+            - name: SEMAPHORE_ACCESS_KEY_ENCRYPTION
+              value: "{{ .Values.semaphore.env.SEMAPHORE_ACCESS_KEY_ENCRYPTION }}"
+            - name: ANSIBLE_HOST_KEY_CHECKING
+              value: "{{ .Values.semaphore.env.ANSIBLE_HOST_KEY_CHECKING }}"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: semaphore-service
+spec:
+  selector:
+    app: semaphore
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+

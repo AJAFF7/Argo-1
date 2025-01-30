@@ -1,14 +1,15 @@
+
 apiVersion: v1
 kind: Service
 metadata:
-  name: vcoins-service
-  namespace: default
+  name: semaphore-service
+  namespace: default  # Ensure you set the right namespace
 spec:
-  type: LoadBalancer   # Change to ClusterIP for internal routing via Ingress
+  type: LoadBalancer  # Change to ClusterIP if using Ingress
   selector:
-    app: vcoins-app
+    app: semaphore  # Should match the label of your Semaphore deployment
   ports:
     - protocol: TCP
       port: 80         # External port exposed by the service
-      targetPort: 8484  # The container's port (defined in your Rollout)
+      targetPort: 3000  # The container's port (defined in your Rollout)
 

@@ -24,6 +24,17 @@ semaphore:
     SEMAPHORE_ADMIN_PASSWORD: "admin"
     SEMAPHORE_ADMIN_NAME: "admin"
     SEMAPHORE_ADMIN_EMAIL: "a.j.s-engineer@outlook.com"
+    SEMAPHORE_ADMIN_USER: "admin"
     SEMAPHORE_ACCESS_KEY_ENCRYPTION: "LxLP2zsSptao27pM6dTel83d5vdJOIydmktnHPrLkJU="
     ANSIBLE_HOST_KEY_CHECKING: "False"
+    # Add a wait-for-database command to ensure the db is ready
+    WAIT_FOR_DB: "mysql:3306"
+  initContainers:
+    - name: wait-for-mysql
+      image: busybox
+      command: ['sh', '-c', 'until nc -z -v -w30 $WAIT_FOR_DB; do echo "Waiting for MySQL..."; sleep 2; done; echo "MySQL is up!"']
+      env:
+        - name: WAIT_FOR_DB
+          value: "mysql:3306"
+      restartPolicy: Always
 

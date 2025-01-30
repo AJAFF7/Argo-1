@@ -11,25 +11,27 @@ spec:
   strategy:
     canary:
       steps:
-      - setWeight: 20
-      - pause:
-          duration: 30s
-      - setWeight: 50
-      - pause:
-          duration: 60s
-      - setWeight: 100
+        - setWeight: 20
+        - pause:
+            duration: 30s
+        - setWeight: 50
+        - pause:
+            duration: 60s
+        - setWeight: 100
   template:
     metadata:
       labels:
         app: cloudflare-app
     spec:
       containers:
-      - name: cloudflare-app
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-
-        resources:
-          limits:
-            memory: "100Mi"  # Set memory limit to 100MB
-          requests:
-            memory: "100Mi"  # Optional: set a memory request to match the limit
+        - name: cloudflare-app
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          command: ["/bin/sh", "-c"]
+          args:
+            - cloudflared tunnel --no-autoupdate run --token eyJhIjoiZmE4MmRlMGFjNWE5Njg2YWIwNDZkMzVkMDdhMzQ2MDciLCJ0IjoiYzdlZTU1MWUtYjM2OS00MWZiLWI3MGMtNTFmMzAxNmRjMjI3IiwicyI6Ik9HTTNaREkxWldJdE1XSXpaUzAwTUdNM0xXRXdNV1l0TkdZNE1EUTJPV0V6TlRJNSJ9
+          resources:
+            limits:
+              memory: "100Mi"
+            requests:
+              memory: "100Mi"
 

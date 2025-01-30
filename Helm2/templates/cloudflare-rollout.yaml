@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: cloudflare-rollout
+  namespace: default
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: cloudflare-app
+  strategy:
+    canary:
+      steps:
+      - setWeight: 20
+      - pause:
+          duration: 30s
+      - setWeight: 50
+      - pause:
+          duration: 60s
+      - setWeight: 100
+  template:
+    metadata:
+      labels:
+        app: cloudflare-app
+    spec:
+      containers:
+      - name: cloudflare-app
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+
+        resources:
+          limits:
+            memory: "100Mi"  # Set memory limit to 100MB
+          requests:
+            memory: "100Mi"  # Optional: set a memory request to match the limit
+

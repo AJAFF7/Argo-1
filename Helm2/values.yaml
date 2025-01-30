@@ -1,8 +1,7 @@
 image:
-  repository: mongo
+  repository: cloudflare/cloudflared
   tag: latest
 
 replicaCount: 1
 
-#service:
-#  nodePort: 32000
+
